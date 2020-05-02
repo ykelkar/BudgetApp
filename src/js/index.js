@@ -27,21 +27,26 @@ const doughnutChartController = (function () {
     
     return {
         addData: function(value, category) {
-            chart.data[0].dataPoints.push(
-                {
-                    y: value, 
-                    label: category
-                }
-            );
+            const newValue = {
+                y: value, 
+                label: category
+            };
+            chart.data[0].dataPoints.push(newValue);
             chart.render();
         },
 
-        deleteData: function() {
-
+        deleteData: function(category) {
+            chart.data[0].dataPoints.forEach((dp, i) => {
+                if (dp.label === category) chart.data[0].dataPoints.splice(i, 1);
+            });
+            chart.render();
         }, 
 
-        updateData: function() {
-            
+        updateData: function(category, val) {
+            chart.data[0].dataPoints.forEach((dp, i) => {
+                if (dp.label === category) chart.data[0].dataPoints[i].y = val;
+            });
+            chart.render();
         }
     }
 })();
@@ -353,7 +358,9 @@ document.querySelector(elements.inputType).addEventListener('change', () => {
 });
 
 elements.container.addEventListener('click', e => {
-    const itemID = e.target.parentNode.parentNode.parentNode.parentNode.id;
+    const node = e.target.parentNode.parentNode.parentNode.parentNode;
+    const itemID = node.id;
+    const des = node.querySelector('.item__description').innerHTML;
 
     if (itemID) {
         const splitID = itemID.split('-');
@@ -365,6 +372,9 @@ elements.container.addEventListener('click', e => {
 
         // 2. Delete the item from the UI
         budgetView.deleteListItem(itemID)
+
+        // 3. Delete from doughnut chart if exp
+        if (type === 'exp') doughnutChartController.deleteData(des);
 
         // 3. Update and show the new budget
         updateBudget();
@@ -391,7 +401,7 @@ function ctrlAddItem() {
             budgetView.updateListItem(itemID, newValue, input.type);
             
             // 4. Update doughnut chart
-            //if (input.type === 'exp') doughnutChartController.updateData(newItem.value, newItem.description);
+            if (input.type === 'exp') doughnutChartController.updateData(input.description, newValue);
 
         } else {
             // 2. Add the item to the budget controller
@@ -404,7 +414,7 @@ function ctrlAddItem() {
             budgetView.addListItem(newItem, input.type);
 
             // 5. Add to doughnut chart
-            if (input.type === 'exp') doughnutChartController.addData(newItem.value, newItem.description);
+            if (input.type === 'exp') doughnutChartController.addData(newItem.value, newItem.description, id);
         }
 
         // 6. Clear the fields 
