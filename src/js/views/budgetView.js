@@ -24,7 +24,6 @@ export const getInput = () => {
 
 export const addListItem = (obj, type) => {
     let element;
-    console.log(obj);
     let percentageHtml = `<div class="item__percentage">${obj.percentage}</div>`;
     // 1. Create HTML string with placeholder text
     if (type === 'inc') {
@@ -57,6 +56,11 @@ export const addListItem = (obj, type) => {
 export const deleteListItem = selectorID => {
     let el = document.getElementById(selectorID);
     el.parentNode.removeChild(el);
+};
+
+export const updateListItem = (selectorID, val, type) => {
+    let el = document.getElementById(selectorID);
+    el.querySelector('.item__value').innerHTML = formatNumber(val, type);
 };
 
 export const clearFields = () => {
@@ -110,8 +114,4 @@ export const changedType = () => {
     fields.forEach(current => current.classList.toggle('red-focus'));
 
     elements.inputBtnSvg.classList.toggle('red');
-};
-
-export const getDOMstrings = () => {
-    return DOMstrings;
 };

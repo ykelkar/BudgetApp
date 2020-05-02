@@ -38,7 +38,7 @@ export default class Budget {
         this.data.allItems[type].push(newItem);
 
         // Return the new element
-        return newItem;
+        return [newItem, id];
     }
 
     deleteItem(type, id) {
@@ -47,6 +47,16 @@ export default class Budget {
         const index = ids.indexOf(id);
 
         if (index !== -1) this.data.allItems[type].splice(index, 1);
+    }
+
+    updateItem(type, id, val) {
+        const ids = this.data.allItems[type].map(current => current.id);
+
+        const index = ids.indexOf(id);
+
+        this.data.allItems[type][index].value += val; 
+
+        return this.data.allItems[type][index].value;
     }
 
     calculateBudget() {
@@ -73,7 +83,6 @@ export default class Budget {
 
     getPercentages() {
         const allPerc = this.data.allItems.exp.map(current => current.getPercentage());
-        console.log(`Percentages: ${allPerc}`);
         return allPerc;
     }
 
