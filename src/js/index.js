@@ -1,10 +1,15 @@
+import Budget from './models/Budget';
+import * as budgetView from './views/budgetView';
+import { elements } from './views/base';
+
 // DOUGHNUT CHART CONTROLLER
-var doughnutChartController = (function () {
+
+const doughnutChartController = (function () {
 
     var chart = new CanvasJS.Chart("chartContainer", {
         animationEnabled: true,
         title:{
-            text: "Expense Categories",
+            text: "Expenses Split",
             horizontalAlign: "center"
         },
         data: [{
@@ -34,6 +39,7 @@ var doughnutChartController = (function () {
     }
 })();
 
+/*
 // BUDGET CONTROLLER
 var budgetController = (function() {
 
@@ -323,22 +329,109 @@ var UIController = (function() {
         }
     }
 })();
+*/
 
+const state = {};
+
+elements.inputBtn.addEventListener('click', () => {
+    ctrlAddItem();
+});
+
+function ctrlAddItem() {
+    // 1. Get the field input data
+    const input = budgetView.getInput();
+    
+    if (input.description !== "" && !isNaN(input.value) && input.value > 0) {
+        // 2. Add the item to the budget controller
+        const newItem = state.budget.addItem(input.type, input.description, input.value);
+        
+        // 3. Add the new item to the UI
+        budgetView.addListItem(newItem, input.type);
+
+        // 4. Add to doughnut chart
+        if (input.type === 'exp') {
+            //state.chart.addData(newItem.value, newItem.description);
+            //state.chart.chart.render();
+            doughnutChartController.addData(newItem.value, newItem.description);
+        }
+
+        // 5. Clear the fields 
+        budgetView.clearFields();
+        
+        // 6. Calculate and update budget
+        updateBudget();
+
+        // 7. Calculate and update percentages
+        updatePercentages();
+    }
+};
+
+function updateBudget() {
+    // 1. Calculate the budget
+    state.budget.calculateBudget();
+
+    // 2. Return the budget 
+    const budget = state.budget.getBudget();
+
+    // 3. Display the budget on the UI
+    budgetView.displayBudget(budget);
+};
+
+function updatePercentages() {
+    // 1. Calculate percentages
+    state.budget.calculatePercentages();
+
+    // 2. Read percentages from the budget controller
+    const percentages = state.budget.getPercentages();
+
+    // 3. Update the UI with the new percentages
+    budgetView.displayPercentages(percentages);
+};
+
+document.addEventListener('keypress', e => {
+    if (e.keyCode === 13 || e.which === 13)  ctrlAddItem();
+});
+
+elements.container.addEventListener('click', e => {
+    const itemID = e.target.parentNode.parentNode.parentNode.parentNode.id;
+
+    if (itemID) {
+        const splitID = itemID.split('-');
+        const type = splitID[0];
+        const id = parseInt(splitID[1]);
+
+        // 1. delete the item from the data structure
+        state.budget.deleteItem(type, id);
+
+        // 2. Delete the item from the UI
+        budgetView.deleteListItem(itemID)
+
+        // 3. Update and show the new budget
+        updateBudget();
+
+        // 4. Calculate and update percentages
+        updatePercentages();
+    }
+});
+
+document.querySelector(elements.inputType).addEventListener('change', () => {
+    budgetView.changedType();
+});
 // GLOBAL APP CONTROLLER
-var controller = (function(budgetCtrl, UICtrl) {
+//const controller = (budgetCtrl, UICtrl) => {
+    //var setupEventListeners = function() {
+        //var DOM = UICtrl.getDOMstrings();
+        //document.querySelector(DOM.inputBtn).addEventListener('click', ctrlAddItem);
 
-    var setupEventListeners = function() {
-        var DOM = UICtrl.getDOMstrings();
-        document.querySelector(DOM.inputBtn).addEventListener('click', ctrlAddItem);
+        // document.addEventListener('keypress', function(event) {
+        //     if (event.keyCode === 13 || event.which === 13)  ctrlAddItem();
+        // });
 
-        document.addEventListener('keypress', function(event) {
-            if (event.keyCode === 13 || event.which === 13)  ctrlAddItem();
-        });
+        //document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);
+        //document.querySelector(DOM.inputType).addEventListener('change', UICtrl.changedType);
+    //};
 
-        document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);
-        document.querySelector(DOM.inputType).addEventListener('change', UICtrl.changedType);
-    };
-
+    /*
     var updateBudget = function() {
         // 1. Calculate the budget
         budgetCtrl.calculateBudget();
@@ -387,46 +480,59 @@ var controller = (function(budgetCtrl, UICtrl) {
             updatePercentages();
         }
     };
+    */
 
     // Using event delegation
-    var ctrlDeleteItem = function(event) {
-        var itemID, splitID, type, id;
+    // var ctrlDeleteItem = function(event) {
+    //     var itemID, splitID, type, id;
 
-        itemID = event.target.parentNode.parentNode.parentNode.parentNode.id;
+    //     itemID = event.target.parentNode.parentNode.parentNode.parentNode.id;
 
-        if (itemID) {
-            splitID = itemID.split('-');
-            type = splitID[0];
-            id = parseInt(splitID[1]);
+    //     if (itemID) {
+    //         splitID = itemID.split('-');
+    //         type = splitID[0];
+    //         id = parseInt(splitID[1]);
 
-            // 1. delete the item from the data structure
-            budgetCtrl.deleteItem(type, id);
+    //         // 1. delete the item from the data structure
+    //         budgetCtrl.deleteItem(type, id);
 
-            // 2. Delete the item from the UI
-            UICtrl.deleteListItem(itemID)
+    //         // 2. Delete the item from the UI
+    //         UICtrl.deleteListItem(itemID)
 
-            // 3. Update and show the new budget
-            updateBudget();
+    //         // 3. Update and show the new budget
+    //         updateBudget();
 
-            // 4. Calculate and update percentages
-            updatePercentages();
-        }
-    };
+    //         // 4. Calculate and update percentages
+    //         updatePercentages();
+    //     }
+    // };
 
-    return {
-        init: function() {
-            console.log('Application has started.');
-            UICtrl.displayMonth();
-            UICtrl.displayBudget({
-                budget: 0,
-                totalInc: 0,
-                totalExp: 0,
-                percentage: 0
-            });
-            setupEventListeners();
-        }
-    }
-})(budgetController, UIController, doughnutChartController);
+//     return {
+//         init: function() {
+//             console.log('Application has started.');
+//             UICtrl.displayMonth();
+//             UICtrl.displayBudget({
+//                 budget: 0,
+//                 totalInc: 0,
+//                 totalExp: 0,
+//                 percentage: 0
+//             });
+//             setupEventListeners();
+//         }
+//     }
+// })(budgetController, UIController, doughnutChartController);
 
-controller.init();
-
+//controller.init()
+const init = () => {
+    console.log('Application has started.');
+    state.budget = new Budget();
+    window.state = state;
+    budgetView.displayMonth();
+    budgetView.displayBudget({
+        budget: 0,
+        totalInc: 0,
+        totalExp: 0,
+        percentage: 0
+    });
+}
+init();

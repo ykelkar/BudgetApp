@@ -1,34 +1,18 @@
 export const elements = {
-    searchForm: document.querySelector('.search'),
-    searchInput: document.querySelector('.search__field'),
-    searchResults: document.querySelector('.results'),
-    searchResList: document.querySelector('.results__list'),
-    searchResPages: document.querySelector('.results__pages'),
-    recipe: document.querySelector('.recipe'),
-    shoppingForm: document.querySelector('.list'),
-    myShoppingList: document.querySelector('.shopping'),
-    shopping: document.querySelector('.shopping__list'),
-    shoppingListClear: document.querySelector('.shopping__clear'),
-    shoppingInput: document.querySelector('.list__field--add'),
-    likesMenu: document.querySelector('.likes__field'), 
-    likesList: document.querySelector('.likes__list'), 
-};
-export const elementStrings = {
-    loader: 'loader'
-};
-
-export const renderLoader = parent => {
-    const loader = `
-        <div class="${elementStrings.loader}">
-            <svg>
-                <use href="img/icons.svg#icon-cw"></use>
-            </svg>
-        </div>
-    `;
-    parent.insertAdjacentHTML('afterbegin', loader);
-};
-
-export const clearLoader = () => {
-    const loader = document.querySelector(`.${elementStrings.loader}`);
-    if (loader) loader.parentElement.removeChild(loader);
+    inputType: '.add__type',
+    inputDescription: '.add__description',
+    inputValue: '.add__value',
+    inputBtn: document.querySelector('.add__btn'),
+    inputBtnSvg: document.querySelector('.add__btn--svg'),
+    inputBtnIcon: document.querySelector('#add__btn--icon'),
+    incomeContainer: document.querySelector('.income__list'),
+    expensesContainer: document.querySelector('.expenses__list'),
+    budgetLabel: document.querySelector('.budget__value'),
+    incomeLabel: document.querySelector('.budget__income--value'),
+    expenseLabel: document.querySelector('.budget__expenses--value'),
+    percentageLabel: document.querySelector('.budget__expenses--percentage'),
+    container: document.querySelector('.container'),
+    expensesPercLabel: '.item__percentage',
+    dateLabel: document.querySelector('.budget__title--month'),
+    deleteItemBtn: document.querySelector('.delete__btn--icon')
 };

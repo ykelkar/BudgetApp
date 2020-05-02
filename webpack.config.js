@@ -8,7 +8,8 @@ module.exports = {
         filename: 'js/bundle.js'
     },
     devServer: {
-        contentBase: './dist'
+        contentBase: './dist',
+        disableHostCheck: true
     },
     plugins: [
         new HtmlWebpackPlugin({

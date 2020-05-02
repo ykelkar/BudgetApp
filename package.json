@@ -20,10 +20,8 @@
     "webpack-dev-server": "^3.1.11"
   },
   "dependencies": {
-    "axios": "^0.19.2",
     "babel-polyfill": "^6.26.0",
-    "fractional": "^1.0.0",
-    "serialize-javascript": "^2.1.1",
-    "uniqid": "^5.2.0"
+    "canvasjs": "^1.8.3",
+    "serialize-javascript": "^2.1.1"
   }
 }
