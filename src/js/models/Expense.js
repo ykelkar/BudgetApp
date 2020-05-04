@@ -12,7 +12,6 @@ export default class Expense {
         } else {
             this.percentage = -1;
         }
-        
         return this.percentage;
     };
 

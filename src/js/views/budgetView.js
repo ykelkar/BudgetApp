@@ -24,7 +24,7 @@ export const getInput = () => {
 
 export const addListItem = (obj, type) => {
     let element;
-    let percentageHtml = `<div class="item__percentage">${obj.percentage}</div>`;
+    let percentageHtml = `<div class="item__percentage">${obj.percentage}%</div>`;
     // 1. Create HTML string with placeholder text
     if (type === 'inc') {
         percentageHtml = '';

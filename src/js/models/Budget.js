@@ -37,16 +37,20 @@ export default class Budget {
         // Push it into our data structure 
         this.data.allItems[type].push(newItem);
 
+        this.persistData();
+        
         // Return the new element
         return [newItem, id];
     }
 
     deleteItem(type, id) {
         const ids = this.data.allItems[type].map(current => current.id);
-
+        
         const index = ids.indexOf(id);
-
+        
         if (index !== -1) this.data.allItems[type].splice(index, 1);
+
+        this.persistData();
     }
 
     updateItem(type, id, val) {
@@ -55,6 +59,8 @@ export default class Budget {
         const index = ids.indexOf(id);
 
         this.data.allItems[type][index].value += val; 
+
+        this.persistData();
 
         return this.data.allItems[type][index].value;
     }
@@ -73,16 +79,30 @@ export default class Budget {
         } else {
             this.data.percentage = -1;
         }
+        this.persistData();
     }
 
     calculatePercentages() {
+        const expenses = [];
         this.data.allItems.exp.forEach(current => {
+            current = new Expense(current.id, current.description, current.value);
             current.percentage = current.calcPercentage(this.data.totals.inc);
+            expenses.push(current);
+            this.data.allItems.exp = expenses;
         });
+        this.persistData();
+        
     }
 
     getPercentages() {
-        const allPerc = this.data.allItems.exp.map(current => current.getPercentage());
+        const allPerc = [];
+        this.data.allItems.exp.forEach(current => {
+            const perc = current.percentage;
+            current = new Expense(current.id, current.description, current.value);
+            current.percentage = perc;
+            allPerc.push(current.getPercentage());
+        });
+        this.persistData();
         return allPerc;
     }
 
@@ -95,14 +115,30 @@ export default class Budget {
         };
     }
 
-    testing() {
-        console.log(this.data);
-    }
-
     calculateTotal(type) {
         let sum = 0;
         this.data.allItems[type].forEach(current => sum += current.value);
         this.data.totals[type] = sum;
+        this.persistData();
+    }
+
+    persistData() {
+        localStorage.setItem('budget', JSON.stringify(this.data));
+    }
+
+    readStorage() {
+        const storage = JSON.parse(localStorage.getItem('budget'));
+
+        // Restoring list from the localStorage
+        if (storage) {
+            this.data = storage;
+            this.data.allItems.exp.forEach(item => {
+                const perc = item.percentage;
+                item = new Expense(item.id, item.description, item.value);
+                item.percentage = perc;
+            });
+            this.data.allItems.inc.forEach(item => item = new Income(item.id, item.description, item.value));
+        }
     }
 }
 
