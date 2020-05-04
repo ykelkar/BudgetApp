@@ -98,14 +98,15 @@ window.addEventListener('load', () => {
 elements.container.addEventListener('click', e => {
     let node = e.target.parentNode.parentNode.parentNode.parentNode;
     const itemID = node.id;
+    console.log(node.id);
     
     if (itemID) {
-        node = type === 'exp' ? e.target.parentNode.parentNode.parentNode.parentNode : e.target.parentNode.parentNode.parentNode.parentNode.parentNode;
-        const des = node.querySelector('.item__description').innerHTML;
         const splitID = itemID.split('-');
         const type = splitID[0];
         const id = parseInt(splitID[1]);
-
+        const des = document.getElementById(`${itemID}`).querySelector('.item__description').innerHTML;
+        console.log(des);
+        
         // 1. delete the item from the data structure
         state.budget.deleteItem(type, id);
 
@@ -113,7 +114,7 @@ elements.container.addEventListener('click', e => {
         budgetView.deleteListItem(itemID)
 
         // 3. Delete from doughnut chart if exp
-        if (type === 'exp') doughnutChartController.deleteData(des);
+        if (type === 'exp') doughnutChartController.deleteData(des);    
 
         // 3. Update and show the new budget
         updateBudget();
@@ -126,12 +127,10 @@ elements.container.addEventListener('click', e => {
 function ctrlAddItem() {
     // 1. Get the field input data
     const input = budgetView.getInput();
-    input.description = input.description[0].toUpperCase() + input.description.substring(1, input.description.length).toLowerCase();
-
     let newInput = true;
     if (input.description !== "" && !isNaN(input.value) && input.value > 0) {
         state.budget.data.allItems[input.type].forEach(item => {
-            if (item.description === input.description) {
+            if (item.description.toLowerCase().trim() === input.description.toLowerCase().trim()) {
                 const id = item.id;
                 const itemID = `${input.type}-${id}`;
 
