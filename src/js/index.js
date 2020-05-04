@@ -126,6 +126,8 @@ elements.container.addEventListener('click', e => {
 function ctrlAddItem() {
     // 1. Get the field input data
     const input = budgetView.getInput();
+    input.description = input.description[0].toUpperCase() + input.description.substring(1, input.description.length).toLowerCase();
+
     let newInput = true;
     if (input.description !== "" && !isNaN(input.value) && input.value > 0) {
         state.budget.data.allItems[input.type].forEach(item => {
