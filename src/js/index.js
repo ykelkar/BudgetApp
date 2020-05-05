@@ -36,14 +36,14 @@ const doughnutChartController = (function () {
 
         deleteData: function(category) {
             chart.data[0].dataPoints.forEach((dp, i) => {
-                if (dp.label === category) chart.data[0].dataPoints.splice(i, 1);
+                if (dp.label.toLowerCase().trim() === category.toLowerCase().trim()) chart.data[0].dataPoints.splice(i, 1);
             });
             chart.render();
         }, 
 
         updateData: function(category, val) {
             chart.data[0].dataPoints.forEach((dp, i) => {
-                if (dp.label === category) chart.data[0].dataPoints[i].y = val;
+                if (dp.label.toLowerCase().trim() === category.toLowerCase().trim()) chart.data[0].dataPoints[i].y = val;
             });
             chart.render();
         }
@@ -98,14 +98,12 @@ window.addEventListener('load', () => {
 elements.container.addEventListener('click', e => {
     let node = e.target.parentNode.parentNode.parentNode.parentNode;
     const itemID = node.id;
-    console.log(node.id);
     
     if (itemID) {
         const splitID = itemID.split('-');
         const type = splitID[0];
         const id = parseInt(splitID[1]);
         const des = document.getElementById(`${itemID}`).querySelector('.item__description').innerHTML;
-        console.log(des);
         
         // 1. delete the item from the data structure
         state.budget.deleteItem(type, id);
